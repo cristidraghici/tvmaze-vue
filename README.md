@@ -33,12 +33,16 @@ As we start the project, the following decisions will set the direction for the 
 - The application as it was created by the `npm init vue@latest`;
 - Some fixes were added for linting the code.
 
-### T1 - ...
+### T1 - Use fetch to make some requests to the TVmaze api
+
+We will start with a cleanup, removing most of the existing components. We will then create a basic file structure which will mainly have a dashboard to make a request for a list of movies and a details page which will show the value of the passed param.
 
 ## Final notes
 
 I have used Windows as a development environment after quite a long time. The OS should not make a big difference, of course. But from time to time, tools like the linter or even project bundlers themselves might have issues because of it.
 
 ---
+
+If viewing the code with git in mind, please make sure to be on the `implement-requirements` branch. The name is not ideal, mainly because it's generic. But as mentioned above, we will use only one branch to implement multiple requirements/features/tasks.
 
 More to be added :)
