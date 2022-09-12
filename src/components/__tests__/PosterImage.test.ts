@@ -5,7 +5,7 @@ import PosterImage from '../PosterImage.vue'
 
 describe('PosterImage', () => {
   it('renders properly', () => {
-    const wrapper = mount(PosterImage, { props: { src: 'https://path.to/image' } })
+    const wrapper = mount(PosterImage, { props: { src: 'https://path.to/image', name: 'image' } })
     expect(wrapper.html()).toContain('https://path.to/image')
   })
 })

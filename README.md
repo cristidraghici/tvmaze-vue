@@ -131,9 +131,56 @@ export default async function getShows(page: number): Promise<Show[]> {
 
 However, we will not take this approach as the requests we are doing are quite few, there isn't much redundant code to add for each request and we have some situations which are trickier to implement in the above example (e.g. having multiple params like `embed[]=`).
 
+### T2 - Make a pretty interface
+
+We will start by adding Quasar, for its support for Vue 3 and vite, but also for its ease of use. We will redesign the existing pages and try to provide some flow to the whole application.
+
+#### Debouncing
+
+Apparently, inputs in quasar have their own debouncing solution for inputs we do not need our custom util anymore:
+
+```javascript
+export default function debounce<T>(fn: T, wait: number) {
+  let timer: ReturnType<typeof setTimeout>
+
+  return (event: Event) => {
+    if (timer) clearTimeout(timer)
+
+    timer = setTimeout(() => {
+      if (typeof fn === 'function') {
+        fn(event)
+      }
+    }, wait)
+  }
+}
+```
+
+An example call would be:
+
+```javascript
+const onSearchInputChange = debounce(async (e: Event) => {
+  const target = e.target as HTMLInputElement
+  search.value = target.value
+
+  // ... or we can enjoy the reactivity and put the request on a watcher
+  if (search.value.length > 0) {
+    try {
+      searchResults.value = await getSearchShows(search.value)
+    } catch (e) {
+      const err = e as Error
+      console.error(err.message)
+    }
+  } else {
+    searchResults.value = []
+  }
+}, 500)
+```
+
 ## Final notes
 
 I have used Windows as a development environment after quite a long time. The OS should not make a big difference, of course. But from time to time, tools like the linter or even project bundlers themselves might have issues because of it.
+
+Since the application is started from scratch and without a clear structure in mind for the files and functionality, it seemed less efficient to write the unit tests with each commit. However, they were kept in mind while developing.
 
 ---
 
