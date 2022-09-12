@@ -37,6 +37,100 @@ As we start the project, the following decisions will set the direction for the 
 
 We will start with a cleanup, removing most of the existing components. We will then create a basic file structure which will mainly have a dashboard to make a request for a list of movies and a details page which will show the value of the passed param.
 
+The next step will be to make some requests and get some data from TVmaze. Again, we are using `fetch` instead of `axios` because the requests are pretty simple and straightforward.
+
+#### a fetch wrapper
+
+We can create a wrapper for fetch which will return a `get` function already with a base configuration and some error handling. The wrapper can be in: `./src/api/http.ts` and have something like this for the content:
+
+```javascript
+const BASE_URL = 'https://api.tvmaze.com'
+const BASE_CONFIG = {
+  headers: {
+    Accept: 'application/json'
+  }
+}
+
+interface APIWrapperParams {
+  baseUrl: string
+  baseConfig: {
+    [key: string]:
+      | string
+      | {
+          [key: string]: string
+        }
+  }
+}
+
+interface GetParams {
+  endpoint: string
+  params?: {
+    [key: string]: string
+  }
+}
+
+/**
+ * Wrapper to set the base configuration in the get requests
+ */
+const APIWrapper = ({ baseUrl, baseConfig }: APIWrapperParams) => {
+  /**
+   * Wrapper for the `get` request, the only one we use to access TVmaze's API
+   */
+  const get = async <T>({ endpoint, params }: GetParams): Promise<T> => {
+    // ensure we prefix the endpoints
+    if (endpoint.substring(0, 1) !== '/') {
+      throw new Error('Endpoints should start with /')
+    }
+
+    // build the query param
+    const url = params
+      ? `${baseUrl}${endpoint}?${new URLSearchParams(params).toString()}`
+      : `${baseUrl}${endpoint}`
+
+    // make the get request
+    const response = await fetch(url, { ...baseConfig, method: 'GET' })
+
+    // throw if the response is not ok
+    if (!response.ok) {
+      throw new Error(response.statusText)
+    }
+
+    // return the content of the response
+    return response.json() as Promise<T>
+  }
+
+  return { get }
+}
+
+/**
+ * Create the get request from the wrapper with the basic configuration
+ */
+export default APIWrapper({
+  baseUrl: BASE_URL,
+  baseConfig: BASE_CONFIG
+})
+```
+
+An example request will look like:
+
+```javascript
+import http from './http'
+import type { Show } from './types'
+
+export default async function getShows(page: number): Promise<Show[]> {
+  const response = await http.get<Show[]>({
+    endpoint: '/shows',
+    params: {
+      page: page as unknown as string
+    }
+  })
+
+  return response
+}
+```
+
+However, we will not take this approach as the requests we are doing are quite few, there isn't much redundant code to add for each request and we have some situations which are trickier to implement in the above example (e.g. having multiple params like `embed[]=`).
+
 ## Final notes
 
 I have used Windows as a development environment after quite a long time. The OS should not make a big difference, of course. But from time to time, tools like the linter or even project bundlers themselves might have issues because of it.

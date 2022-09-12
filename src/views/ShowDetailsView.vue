@@ -1,13 +1,26 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
+import { onMounted, ref } from 'vue'
+
+import getShow from '@/api/getShow'
+import type { Show } from '@/api/types'
 
 const route = useRoute()
 
-const id = route.params.id
+const show = ref<Show | null>(null)
+
+onMounted(async () => {
+  const id = route.params.id as unknown as number
+
+  show.value = await getShow(id)
+})
 </script>
 
 <template>
   <div class="ShowDetails">
-    <h1>This is the view which shows the details of the show with the id: {{ id }}</h1>
+    <div v-if="!show">Loading...</div>
+    <div v-else>
+      {{ show.name }}
+    </div>
   </div>
 </template>
