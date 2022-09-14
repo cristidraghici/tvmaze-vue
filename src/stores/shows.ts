@@ -50,6 +50,14 @@ export const useShowsStore = defineStore('shows', () => {
     }
   })
 
+  const showsByGenre = computed(() => {
+    return (genre: string) => {
+      return shows.value.filter((show) => {
+        return show.genres.includes(genre)
+      })
+    }
+  })
+
   return {
     shows,
     isLoading,
@@ -57,6 +65,7 @@ export const useShowsStore = defineStore('shows', () => {
     hasMoreShows,
     loadMoreShows,
     showsCount,
-    showNameById
+    showNameById,
+    showsByGenre
   }
 })

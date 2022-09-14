@@ -246,4 +246,4 @@ Depending on the team decisions, we might want to comment more on the functions 
 
 ---
 
-More to be added :)
+Using Vue 3 for the first time has proven to be more time consuming than initially estimated. This is the main reason why topics such as testing or a proper JS/TS based horizontal slider have not been implemented in the initially set time. However, I do how this repo shows knowledge of JS/TS, the capacity to learn a new-ish frontend framework rather fast, basic task management skills. :)

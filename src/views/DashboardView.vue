@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 
-import VerticalShowsList from './DashboardView/VerticalShowsList.vue'
+import ShowsList from './DashboardView/ShowsList.vue'
 import { useNotifications } from '@/hooks/useNotifications'
 import { useShowsStore } from '@/stores/shows'
 import { useShowSearchStore } from '@/stores/showSearch'
+
+import { genres } from '@/config/shows'
 
 const { notifyError } = useNotifications()
 
@@ -67,7 +69,7 @@ onMounted(async () => {
       </template>
     </q-input>
 
-    <VerticalShowsList
+    <ShowsList
       v-if="search.length > 0"
       title="Search results"
       no-results-text="There are no shows to display yet."
@@ -77,13 +79,24 @@ onMounted(async () => {
     />
 
     <template v-else>
-      <VerticalShowsList
-        title="Available shows"
+      <ShowsList
+        title="All available shows"
         no-results-text="There are no shows to display yet."
         :shows="showsStore.shows"
         :has-more="showsStore.hasMoreShows"
         :is-loading="showsStore.isLoading"
         @load-more="showsStore.loadMoreShows()"
+        :is-horizontal="true"
+      />
+
+      <ShowsList
+        v-for="genre in genres"
+        :key="genre.id"
+        :title="genre.name"
+        no-results-text="There are no shows to display yet."
+        :shows="showsStore.showsByGenre(genre.name)"
+        :has-more="false"
+        :is-loading="false"
         :is-horizontal="true"
       />
     </template>

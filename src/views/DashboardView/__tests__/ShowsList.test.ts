@@ -3,13 +3,13 @@ import { mount } from '@vue/test-utils'
 
 import { Quasar } from 'quasar'
 
-import VerticalShowsList from '../VerticalShowsList.vue'
+import ShowsList from '../ShowsList.vue'
 
-describe('VerticalShowsList', () => {
+describe('ShowsList', () => {
   it('renders properly without shows', () => {
-    const wrapper = mount(VerticalShowsList, {
+    const wrapper = mount(ShowsList, {
       props: {
-        title: 'VerticalShowsList',
+        title: 'ShowsList',
         noResultsText: 'No results to show',
         shows: [],
         hasMore: false,
@@ -22,7 +22,7 @@ describe('VerticalShowsList', () => {
       }
     })
     expect(wrapper.exists()).toBeTruthy()
-    expect(wrapper.text()).toContain('VerticalShowsList')
+    expect(wrapper.text()).toContain('ShowsList')
     expect(wrapper.text()).toContain('No results to show')
   })
 })
