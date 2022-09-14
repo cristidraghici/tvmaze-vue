@@ -15,8 +15,9 @@ export type Country = {
 
 export type Network = {
   id: number
-  names: string
+  name: string
   country: Country
+  officialSite: String
 }
 
 export type Externals = {
@@ -135,19 +136,22 @@ export type Show = {
   genres: string[]
   status: string
   runtime: number
+  averageRuntime: number
   premiered: string
+  ended: string
   officialSite: string
   schedule: Schedule
   rating: Rating
   weight: number
   network: Network
   webChannel: string | null
+  dvdCountry: Country | null
   externals: Externals
   image: Image
   summary: string
   updated: number
   _links: Links
-  _embedded: Embedded
+  _embedded?: Embedded
 }
 
 export type ShowSearch = {

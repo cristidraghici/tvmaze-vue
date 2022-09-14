@@ -1,54 +1,64 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
-import { ref, unref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 
-import PosterImage from '@/components/PosterImage.vue'
+import VerticalShowsList from './DashboardView/VerticalShowsList.vue'
+import { useNotifications } from '@/hooks/useNotifications'
+import { useShowsStore } from '@/stores/shows'
+import { useShowSearchStore } from '@/stores/showSearch'
 
-import getShows from '@/api/getShows'
-import getSearchShows from '@/api/getSearchShows'
-
-import type { Show } from '@/api/types'
+const { notifyError } = useNotifications()
 
 // Search
 const search = ref<string>('')
-const searchResults = ref<Show[]>([])
+const showSearchStore = useShowSearchStore()
 
-watch(search, async (value) => {
-  if (value.length > 0) {
-    try {
-      searchResults.value = await getSearchShows(value)
-    } catch (e) {
-      const err = e as Error
-      console.error(err.message)
+/**
+ * By watching the error value, we ensure that we will display the notification,
+ * in case something happens with our request. It's not the best implementation,
+ * given that a more performant solution might have been call the notify function
+ * as a side effect in the store. However, it's clean and for the moment, at least,
+ * not too expensive for the applications performance all in all.
+ */
+watch(
+  () => showSearchStore.error,
+  (value) => {
+    if (value) {
+      notifyError(value)
     }
-  } else {
-    searchResults.value = []
   }
-})
+)
 
 // Shows list
-const shows = ref<Show[]>([])
-const showsPage = ref(0)
+const showsStore = useShowsStore()
 
-const loadShows = async (page: number) => {
-  try {
-    const retrievedShows = await getShows(page)
-
-    shows.value = shows.value.concat(retrievedShows)
-  } catch (e) {
-    const err = e as Error
-    console.error(err.message)
+watch(
+  () => showsStore.error,
+  (value) => {
+    if (value) {
+      notifyError(value)
+    }
   }
-}
+)
 
 onMounted(async () => {
-  await loadShows(unref(showsPage))
+  if (showsStore.showsCount === 0) {
+    showsStore.loadMoreShows()
+  }
 })
 </script>
 
 <template>
   <div class="Dashboard">
-    <q-input rounded outlined v-model="search" placeholder="Search for a show" debounce="500">
+    <q-input
+      type="text"
+      rounded
+      outlined
+      autofocus
+      v-model="search"
+      placeholder="Search for a show"
+      debounce="500"
+      @update:model-value="(searchTerm) => showSearchStore.findShows(searchTerm as unknown as string)"
+    >
       <template v-slot:append>
         <q-avatar>
           <q-icon v-if="search === ''" name="search" />
@@ -57,41 +67,24 @@ onMounted(async () => {
       </template>
     </q-input>
 
-    <template v-if="search.length > 0">
-      <h1 class="text-h4">Search results</h1>
-      <ol class="shows-list">
-        <li v-for="show in searchResults" :key="`search-${show.id}`">
-          <RouterLink :to="`/show/${show.id}`">
-            <PosterImage :src="show.image?.medium" :name="show.name" />
-          </RouterLink>
-        </li>
-      </ol>
-    </template>
+    <VerticalShowsList
+      v-if="search.length > 0"
+      title="Search results"
+      no-results-text="There are no shows to display yet."
+      :shows="showSearchStore.searchResults"
+      :has-more="false"
+      :is-loading="showSearchStore.isLoading"
+    />
 
     <template v-else>
-      <h1 class="text-h4">Available shows</h1>
-      <ol class="shows-list">
-        <li v-for="show in shows" :key="show.id">
-          <RouterLink :to="`/show/${show.id}`">
-            <PosterImage :src="show.image?.medium" :name="show.name" />
-          </RouterLink>
-        </li>
-      </ol>
-
-      <q-btn @click="loadShows(++showsPage)" color="primary" icon="more" label="Load more shows" />
+      <VerticalShowsList
+        title="Available shows"
+        no-results-text="There are no shows to display yet."
+        :shows="showsStore.shows"
+        :has-more="showsStore.hasMoreShows"
+        :is-loading="showsStore.isLoading"
+        @load-more="showsStore.loadMoreShows()"
+      />
     </template>
   </div>
 </template>
-
-<style lang="scss" scoped>
-ol.shows-list {
-  margin: 0;
-  padding: 0;
-  list-style-type: none;
-
-  li {
-    display: inline-block;
-    margin: 0px 10px 10px 0px;
-  }
-}
-</style>

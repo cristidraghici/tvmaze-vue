@@ -26,6 +26,11 @@ As we start the project, the following decisions will set the direction for the 
 - In a real project, we would not commit anything to `master` except the initial boilerplate code. However, we will fix errors and make minimal changes, as we want to keep the number of branches to a minimum. For the same reason, we will only create only one feature branch;
 - We will make imperative commits and try to be as concise as possible. Ideally, each commit in the feature branch will provide a solution to a clear requirement.
 
+## Notes on the API itself
+
+- This was not the most developer friendly API I have worked with. For example, it would have been nice to receive the same number of items on each request. Or it would have been nice to have some metadata which would minimally say if there are more items to be retrieved;
+- The API does not seem to have querying based on Genre, so we will have to work something out to deliver that.
+
 ## Tasks
 
 ### master - Project setup
@@ -38,6 +43,8 @@ As we start the project, the following decisions will set the direction for the 
 We will start with a cleanup, removing most of the existing components. We will then create a basic file structure which will mainly have a dashboard to make a request for a list of movies and a details page which will show the value of the passed param.
 
 The next step will be to make some requests and get some data from TVmaze. Again, we are using `fetch` instead of `axios` because the requests are pretty simple and straightforward.
+
+A possible improvement can be to cancel an ongoing request if navigating away from the page which is doing the request.
 
 #### a fetch wrapper
 
@@ -135,6 +142,8 @@ However, we will not take this approach as the requests we are doing are quite f
 
 We will start by adding Quasar, for its support for Vue 3 and vite, but also for its ease of use. We will redesign the existing pages and try to provide some flow to the whole application.
 
+However, the main focus of this project will not be on the looks, nor on showing as much information as possible. As long as the information comes and it's easy to access, then CSS and templating is something rather easy to do.
+
 #### Debouncing
 
 Apparently, inputs in quasar have their own debouncing solution for inputs we do not need our custom util anymore:
@@ -176,14 +185,53 @@ const onSearchInputChange = debounce(async (e: Event) => {
 }, 500)
 ```
 
+### T3 - Structure the application
+
+At this point we are able to access the API, but we are doing it in a rudimentary way and we show minimal data. It's time to start using pinia to manage our state.
+
+The main reason to store the movie list outside the dashboard view is that we want the already loaded results available.
+
+For a similar reason, we will create a separate store for the search. Since we want to keep the application small and simple, we will treat the search results as separate from those from the paginated results. As a new feature or an improvement, they could be put in the same store and then filtered out based on id.
+
+We will not use a store for the show details requests, as we don't really need all that information elsewhere. However, in the show details page we will use the store to try to display the name of the show while loading.
+
+To help with designing the pages, a delay to the API responses has been applied directly in the `@/api/` request files:
+
+```javascript
+// Delay the response by 1 second
+await new Promise((resolve) => {
+  setTimeout(() => {
+    resolve('')
+  }, 1000)
+})
+```
+
+The above can also be slightly tweaked to check what happens when an error on the API occurs.
+
+```javascript
+const isSuccessful = (): boolean => Math.random() >= 0.5
+
+await new Promise((resolve, reject) => {
+  setTimeout(() => {
+    isSuccessful() ? resolve('') : reject({ message: 'Error encountered! Beware!' })
+  }, 1000)
+})
+```
+
+We will also be organizing the views. Basically, each view will receive a cleanup and we will create sub-components where necessary. If the sub-components are common for multiple views, then they will be moved to the `./src/components` folder. As much as possible, the common components will be kept as dumb :) and isolated from the global state as possible.
+
+A custom hook has been created to show notifications. Currently, we only need a notification to show errors. By using a hook wrapped around the notifications, we will ensure that the same type of notifications will look the same way everywhere in the app.
+
 ## Final notes
 
 I have used Windows as a development environment after quite a long time. The OS should not make a big difference, of course. But from time to time, tools like the linter or even project bundlers themselves might have issues because of it.
 
 Since the application is started from scratch and without a clear structure in mind for the files and functionality, it seemed less efficient to write the unit tests with each commit. However, they were kept in mind while developing.
 
----
+It's the first time I have used Vue's Composition API for a project, so I am getting familiarized with it's options and way of doing things. One thing I have to dig deeper into is the way reactivity actually works. The first impression is that there are many ways to get to the same outcome, so it's necessary to learn more about how it actually works in order to be able to pick the right approach when needed.
 
-If viewing the code with git in mind, please make sure to be on the `implement-requirements` branch. The name is not ideal, mainly because it's generic. But as mentioned above, we will use only one branch to implement multiple requirements/features/tasks.
+Depending on the team decisions, we might want to comment more on the functions and variables than how I chose to do it in this project. I decided to comment only where the solution / the choice made was not the obvious way to go or where the code alone seemed ambiguous.
+
+---
 
 More to be added :)
