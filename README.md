@@ -222,6 +222,12 @@ We will also be organizing the views. Basically, each view will receive a cleanu
 
 A custom hook has been created to show notifications. Currently, we only need a notification to show errors. By using a hook wrapped around the notifications, we will ensure that the same type of notifications will look the same way everywhere in the app.
 
+### T4 - Improve test coverage
+
+At this point, the application is stable enough to tackle the testing aspect. We will improve on unit testing.
+
+Testing with Quasar, vitest and typescript has proven more challenging than expected. Some minimal tests have been added, but this is a matter to be improved for sure.
+
 ## Final notes
 
 I have used Windows as a development environment after quite a long time. The OS should not make a big difference, of course. But from time to time, tools like the linter or even project bundlers themselves might have issues because of it.
