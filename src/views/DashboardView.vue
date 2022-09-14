@@ -84,6 +84,7 @@ onMounted(async () => {
         :has-more="showsStore.hasMoreShows"
         :is-loading="showsStore.isLoading"
         @load-more="showsStore.loadMoreShows()"
+        :is-horizontal="true"
       />
     </template>
   </div>

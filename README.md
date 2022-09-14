@@ -228,6 +228,12 @@ At this point, the application is stable enough to tackle the testing aspect. We
 
 Testing with Quasar, vitest and typescript has proven more challenging than expected. Some minimal tests have been added, but this is a matter to be improved for sure.
 
+### T5 - Implement the horizontal slider
+
+As I am running out of time, the implementation for the horizontal slider will be mainly CSS based.
+
+With the horizontal slider we will also implement the genre lists.
+
 ## Final notes
 
 I have used Windows as a development environment after quite a long time. The OS should not make a big difference, of course. But from time to time, tools like the linter or even project bundlers themselves might have issues because of it.

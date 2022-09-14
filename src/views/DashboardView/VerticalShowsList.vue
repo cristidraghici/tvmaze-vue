@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import PosterImage from '@/components/PosterImage.vue'
 import CircularLoader from '@/components/CircularLoader.vue'
@@ -13,13 +14,17 @@ defineProps<{
 
   isHorizontal?: boolean
 }>()
+
+const isMobile = ref(false)
+isMobile.value = !!('ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/))
 </script>
 
 <template>
   <div
     class="VerticalShowsList"
     :class="{
-      'VerticalShowsList--horizontal': isHorizontal
+      'VerticalShowsList--horizontal': isHorizontal,
+      'VerticalShowsList--horizontal--isMobile': isHorizontal && isMobile
     }"
   >
     <h1 class="text-h4">{{ title }}</h1>
@@ -73,12 +78,14 @@ defineProps<{
       max-height: 320px;
       overflow-x: auto;
 
-      &::-webkit-scrollbar {
-        width: 0;
-      }
-
       li {
         line-height: 320px;
+      }
+    }
+
+    &--isMobile {
+      ul::-webkit-scrollbar {
+        width: 0;
       }
     }
   }
