@@ -234,6 +234,10 @@ As I am running out of time, the implementation for the horizontal slider will b
 
 With the horizontal slider we will also implement the genre lists.
 
+### T6 - General cleanup and improvements
+
+A first improvement to be done is to add some e2e tests to cypress. Since unit testing proved to be more complicated, the low hanging fruit provided by cypress will provide some safety related to the application's general functionality.
+
 ## Final notes
 
 I have used Windows as a development environment after quite a long time. The OS should not make a big difference, of course. But from time to time, tools like the linter or even project bundlers themselves might have issues because of it.
