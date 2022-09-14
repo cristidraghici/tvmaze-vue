@@ -230,7 +230,117 @@ Testing with Quasar, vitest and typescript has proven more challenging than expe
 
 ### T5 - Implement the horizontal slider
 
-As I am running out of time, the implementation for the horizontal slider will be mainly CSS based.
+As I am running out of time, the implementation for the horizontal slider will be mainly CSS based. A quick solution could be to implement a different way of showing the list in the `ShowsList.vue` component. However, this solution is not quite the clean one, so it will not make it in the codebase as it is. Things to improve: maybe use slots, find a better solution for the `itemWidth` value, find a better way to calculate the total width of the window.
+
+```javascript
+<script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+
+import PosterImage from '@/components/PosterImage.vue'
+import type { Show } from '@/api/types'
+
+const props = withDefaults(
+  defineProps<{
+    shows: Show[]
+    itemWidth?: number
+  }>(),
+  {
+    itemWidth: 210
+  }
+)
+
+const currentSlide = ref<number>(1)
+const itemsPerPage = ref<number>(1)
+
+// Get the current window width
+const onResize = () => {
+  // Get the window width, but subtract the width of the buttons
+  // and some buffer for the padding of the content
+  const windowWidth = window.innerWidth - 100 - 40
+  itemsPerPage.value = Math.floor(windowWidth / props.itemWidth) || 1
+}
+onMounted(() => {
+  window.addEventListener('resize', onResize)
+
+  onResize()
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', onResize)
+})
+
+// Nav to the left
+const hasMoreLeft = computed(() => currentSlide.value > itemsPerPage.value)
+const goLeft = () => {
+  if (hasMoreLeft.value) {
+    currentSlide.value -= itemsPerPage.value
+  }
+}
+
+// Nav to the right
+const hasMoreRight = computed(() => currentSlide.value + itemsPerPage.value < props.shows.length)
+const goRight = () => {
+  if (hasMoreRight.value) {
+    currentSlide.value += itemsPerPage.value
+  }
+}
+
+// Get the shows list
+const currentShows = computed(() => {
+  const items = props.shows.filter((_, idx) => {
+    return idx > currentSlide.value && idx - currentSlide.value <= itemsPerPage.value
+  })
+
+  return items
+})
+</script>
+
+<template>
+  <div class="ShowsCarousel">
+    <div class="ShowsCarousel__Navigation">
+      <div class="ShowsCarousel__Navigation__GoLeft" @click.stop="goLeft">
+        <q-icon name="arrow_left" size="xl" />
+      </div>
+    </div>
+
+    <div class="ShowsCarousel__Items">
+      <RouterLink v-for="show in currentShows" :key="show.id" :to="`/show/${show.id}`">
+        <PosterImage :src="show.image?.medium" :name="show.name" />
+      </RouterLink>
+    </div>
+
+    <div class="ShowsCarousel__Navigation">
+      <div class="ShowsCarousel__Navigation__GoRight" @click.stop="goRight">
+        <q-icon name="arrow_right" size="xl" />
+      </div>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.ShowsCarousel {
+  display: flex;
+  flex-direction: row;
+
+  &__Navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &__GoLeft,
+    &__GoRight {
+      width: 50px;
+    }
+  }
+
+  &__Items {
+    display: flex;
+    flex-direction: row;
+  }
+}
+</style>
+```
+
+#### Genres
 
 With the horizontal slider we will also implement the genre lists.
 
