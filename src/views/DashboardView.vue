@@ -1,32 +1,20 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 
 import ShowsList from './DashboardView/ShowsList.vue'
 import ShowsCarouselByGenre from './DashboardView/ShowsCarouselByGenre.vue'
 import { useNotifications } from '@/hooks/useNotifications'
 import { useShowsStore } from '@/stores/shows'
 import { useShowSearchStore } from '@/stores/showSearch'
+import { useWindowSize } from '@/hooks/useWindowSize'
 
 import { GENRES } from '@/config/shows'
 import { POSTER_WIDTH } from '@/config/posters'
 
 const { notifyError } = useNotifications()
 
-// Window width in pixels
-const windowWidth = ref<number>(0)
-
-// Get the current window width
-const onResize = () => {
-  windowWidth.value =
-    window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
-}
-onMounted(() => {
-  window.addEventListener('resize', onResize)
-  onResize()
-})
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', onResize)
-})
+// Window size
+const { windowWidth } = useWindowSize()
 
 // Search
 const search = ref<string>('')

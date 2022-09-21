@@ -248,6 +248,8 @@ The new component will receive the list with all the available and matching show
 
 The ShowsList component has also received some cleanup: more default props, customizable load more text and an animation for the posters displayed.
 
+For a better code structure, the listener watching the window width has been moved to its own custom hook. If we will need the height in the future, then we can easily add it later and return it from the hook as a ref.
+
 ## Final notes
 
 I have used Windows as a development environment after quite a long time. The OS should not make a big difference, of course. But from time to time, tools like the linter or even project bundlers themselves might have issues because of it.
