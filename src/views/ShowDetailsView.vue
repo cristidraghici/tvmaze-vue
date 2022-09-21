@@ -55,7 +55,7 @@ onMounted(async () => {
       to="/"
       flat
       color="primary"
-      icon="directions"
+      icon="arrow_back"
       label="Back"
     />
 

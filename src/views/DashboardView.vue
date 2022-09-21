@@ -1,14 +1,32 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 
 import ShowsList from './DashboardView/ShowsList.vue'
+import ShowsCarouselByGenre from './DashboardView/ShowsCarouselByGenre.vue'
 import { useNotifications } from '@/hooks/useNotifications'
 import { useShowsStore } from '@/stores/shows'
 import { useShowSearchStore } from '@/stores/showSearch'
 
-import { genres } from '@/config/shows'
+import { GENRES } from '@/config/shows'
+import { POSTER_WIDTH } from '@/config/posters'
 
 const { notifyError } = useNotifications()
+
+// Window width in pixels
+const windowWidth = ref<number>(0)
+
+// Get the current window width
+const onResize = () => {
+  windowWidth.value =
+    window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
+}
+onMounted(() => {
+  window.addEventListener('resize', onResize)
+  onResize()
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', onResize)
+})
 
 // Search
 const search = ref<string>('')
@@ -72,32 +90,34 @@ onMounted(async () => {
     <ShowsList
       v-if="search.length > 0"
       title="Search results"
-      no-results-text="There are no shows to display yet."
+      no-results-text="There are no shows matching your search criteria."
       :shows="showSearchStore.searchResults"
-      :has-more="false"
       :is-loading="showSearchStore.isLoading"
     />
 
     <template v-else>
-      <ShowsList
+      <ShowsCarouselByGenre
         title="All available shows"
         no-results-text="There are no shows to display yet."
+        :window-width="windowWidth"
+        :poster-width="POSTER_WIDTH"
         :shows="showsStore.shows"
-        :has-more="showsStore.hasMoreShows"
+        :can-load-more="showsStore.hasMoreShows"
         :is-loading="showsStore.isLoading"
-        @load-more="showsStore.loadMoreShows()"
-        :is-horizontal="true"
+        @load-more="showsStore.loadMoreShows"
       />
 
-      <ShowsList
-        v-for="genre in genres"
+      <ShowsCarouselByGenre
+        v-for="genre in GENRES"
         :key="genre.id"
         :title="genre.name"
-        no-results-text="There are no shows to display yet."
+        :window-width="windowWidth"
+        :poster-width="POSTER_WIDTH"
         :shows="showsStore.showsByGenre(genre.name)"
-        :has-more="false"
-        :is-loading="false"
-        :is-horizontal="true"
+        :can-load-more="showsStore.hasMoreShows"
+        :is-loading="showsStore.isLoading"
+        @load-more="showsStore.loadMoreShows"
+        no-results-text="There are no shows to display yet."
       />
     </template>
   </div>

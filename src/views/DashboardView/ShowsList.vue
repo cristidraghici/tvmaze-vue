@@ -1,40 +1,36 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import PosterImage from '@/components/PosterImage.vue'
 import CircularLoader from '@/components/CircularLoader.vue'
 import type { Show } from '@/api/types'
 
-defineProps<{
-  title: string
-  noResultsText?: string
-  shows: Show[]
-  hasMore: boolean
-  isLoading: boolean
-
-  isHorizontal?: boolean
-}>()
-
-const isMobile = ref(false)
-isMobile.value = !!('ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/))
+withDefaults(
+  defineProps<{
+    title: string
+    noResultsText?: string
+    shows: Show[]
+    hasMore?: boolean
+    isLoading?: boolean
+  }>(),
+  {
+    hasMore: false,
+    idLoading: false
+  }
+)
 </script>
 
 <template>
-  <div
-    class="VerticalShowsList"
-    :class="{
-      'VerticalShowsList--horizontal': isHorizontal,
-      'VerticalShowsList--horizontal--isMobile': isHorizontal && isMobile
-    }"
-  >
+  <div class="ShowsList">
     <h1 class="text-h4">{{ title }}</h1>
-    <ul v-if="shows.length > 0">
-      <li v-for="show in shows" :key="show.id">
-        <RouterLink :to="`/show/${show.id}`">
-          <PosterImage :src="show.image?.medium" :name="show.name" />
-        </RouterLink>
-      </li>
-    </ul>
+    <template v-if="shows.length > 0">
+      <ul>
+        <li v-for="show in shows" :key="show.id">
+          <RouterLink :to="`/show/${show.id}`">
+            <PosterImage :src="show.image?.medium" :name="show.name" />
+          </RouterLink>
+        </li>
+      </ul>
+    </template>
 
     <div v-else-if="!!noResultsText">{{ noResultsText }}</div>
 
@@ -55,7 +51,7 @@ isMobile.value = !!('ontouchstart' in document.documentElement && navigator.user
 </template>
 
 <style lang="scss" scoped>
-.VerticalShowsList {
+.ShowsList {
   ul {
     margin: 0;
     padding: 0;
@@ -69,25 +65,6 @@ isMobile.value = !!('ontouchstart' in document.documentElement && navigator.user
 
   .LoadMoreButton {
     margin-right: 20px;
-  }
-
-  // Add the following for a CSS based rudimentary horizontal scrolling solution on mobile
-  &--horizontal {
-    ul {
-      display: flex;
-      max-height: 320px;
-      overflow-x: auto;
-
-      li {
-        line-height: 320px;
-      }
-    }
-
-    &--isMobile {
-      ul::-webkit-scrollbar {
-        width: 0;
-      }
-    }
   }
 }
 </style>
