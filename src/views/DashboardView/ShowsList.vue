@@ -7,6 +7,7 @@ import type { Show } from '@/api/types'
 withDefaults(
   defineProps<{
     title: string
+    loadMoreResultsText?: string
     noResultsText?: string
     shows: Show[]
     hasMore?: boolean
@@ -14,7 +15,9 @@ withDefaults(
   }>(),
   {
     hasMore: false,
-    idLoading: false
+    idLoading: false,
+    noResultsText: 'There are no shows to display.',
+    loadMoreResultsText: 'Load more shows'
   }
 )
 </script>
@@ -26,7 +29,9 @@ withDefaults(
       <ul>
         <li v-for="show in shows" :key="show.id">
           <RouterLink :to="`/show/${show.id}`">
-            <PosterImage :src="show.image?.medium" :name="show.name" />
+            <transition name="slide" :duration="500" appear>
+              <PosterImage :src="show.image?.medium" :name="show.name" />
+            </transition>
           </RouterLink>
         </li>
       </ul>
@@ -42,7 +47,7 @@ withDefaults(
         class="LoadMoreButton"
         color="primary"
         icon="more"
-        label="Load more shows"
+        :label="loadMoreResultsText"
       />
 
       <CircularLoader v-if="isLoading" />

@@ -155,20 +155,6 @@ const setOffset = (offset: number) => {
         box-sizing: border-box;
         margin: 0px 10px 10px 0px;
       }
-
-      // Define the animation for the posters
-      .slide-enter-active,
-      .slide-leave-active {
-        transition: opacity 0.7s ease-in-out;
-      }
-      .slide-enter-from,
-      .slide-leave-to {
-        opacity: 0;
-      }
-      .slide-enter-to,
-      .slide-leave-from {
-        opacity: 1;
-      }
     }
   }
 }

@@ -246,6 +246,8 @@ The solution delivered in the initially set amount of time has covered all the r
 
 The new component will receive the list with all the available and matching shows (we have filtering by genre) and will manage pagination on its own. This provides for an easy solution, which can be improved upon if needed.
 
+The ShowsList component has also received some cleanup: more default props, customizable load more text and an animation for the posters displayed.
+
 ## Final notes
 
 I have used Windows as a development environment after quite a long time. The OS should not make a big difference, of course. But from time to time, tools like the linter or even project bundlers themselves might have issues because of it.

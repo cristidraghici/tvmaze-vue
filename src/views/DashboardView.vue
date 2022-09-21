@@ -91,6 +91,7 @@ onMounted(async () => {
       v-if="search.length > 0"
       title="Search results"
       no-results-text="There are no shows matching your search criteria."
+      load-more-results-text="Load more shows"
       :shows="showSearchStore.searchResults"
       :is-loading="showSearchStore.isLoading"
     />
