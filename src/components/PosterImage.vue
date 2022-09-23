@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { POSTER_WIDTH, POSTER_HEIGHT } from '@/config/posters'
+
 defineProps<{
   src?: string
   name: string
@@ -6,7 +8,13 @@ defineProps<{
 </script>
 
 <template>
-  <div class="PosterImage shadow-13">
+  <div
+    class="PosterImage shadow-13"
+    :style="{
+      width: `${POSTER_WIDTH}px`,
+      height: `${POSTER_HEIGHT}px`
+    }"
+  >
     <img v-if="!!src" :src="src" :alt="name" />
     <div v-else class="PosterImage__Placeholder">{{ name }}</div>
   </div>
@@ -15,9 +23,8 @@ defineProps<{
 <style lang="scss" scoped>
 .PosterImage {
   overflow: hidden;
-  width: 210px;
-  height: 295px;
   text-align: left;
+  box-sizing: border-box;
 
   &__Placeholder {
     background-color: #ccc;
