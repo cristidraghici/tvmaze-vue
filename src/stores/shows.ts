@@ -58,6 +58,15 @@ export const useShowsStore = defineStore('shows', () => {
     }
   })
 
+  const genres = computed(() => {
+    return shows.value.reduce((allGenres, show) => {
+      for (const genre of show.genres) {
+        allGenres.add(genre)
+      }
+      return allGenres
+    }, new Set<string>())
+  })
+
   return {
     shows,
     isLoading,
@@ -66,6 +75,7 @@ export const useShowsStore = defineStore('shows', () => {
     loadMoreShows,
     showsCount,
     showNameById,
-    showsByGenre
+    showsByGenre,
+    genres
   }
 })

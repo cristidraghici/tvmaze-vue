@@ -8,7 +8,6 @@ import { useShowsStore } from '@/stores/shows'
 import { useShowSearchStore } from '@/stores/showSearch'
 import { useWindowSize } from '@/hooks/useWindowSize'
 
-import { GENRES } from '@/config/shows'
 import { POSTER_WIDTH } from '@/config/posters'
 
 const { notifyError } = useNotifications()
@@ -97,12 +96,12 @@ onMounted(async () => {
       />
 
       <ShowsCarouselByGenre
-        v-for="genre in GENRES"
-        :key="genre.id"
-        :title="genre.name"
+        v-for="genre in showsStore.genres"
+        :key="genre"
+        :title="genre"
         :window-width="windowWidth"
         :poster-width="POSTER_WIDTH"
-        :shows="showsStore.showsByGenre(genre.name)"
+        :shows="showsStore.showsByGenre(genre)"
         :can-load-more="showsStore.hasMoreShows"
         :is-loading="showsStore.isLoading"
         @load-more="showsStore.loadMoreShows"
