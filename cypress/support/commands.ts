@@ -36,4 +36,12 @@
 //   }
 // }
 
-export {}
+Cypress.Commands.add('search', (show: string) => {
+  cy.get('input').type(show)
+})
+
+declare module Cypress {
+  interface Chainable {
+    search(show: string): Chainable<void>
+  }
+}
